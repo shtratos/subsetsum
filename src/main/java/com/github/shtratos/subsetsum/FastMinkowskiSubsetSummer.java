@@ -133,6 +133,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
      * @return A + B = { a + b | a in A, b in B }
      * @see <a href="http://stackoverflow.com/a/11478023">Efficient Minkowski sum calculation</a>
      */
+    // TODO extract this into separate class for ease of testing and benchmarking
     static ImmutableSet<Long> minkowskiSum(ImmutableSet<Long> A, ImmutableSet<Long> B) {
         final long limit = 2 + 2 * Ordering.natural().max(Iterables.concat(A, B));
         assert limit < (1 << 29); // ensure we do not hit large array limit
