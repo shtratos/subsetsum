@@ -1,0 +1,16 @@
+group 'com.github.shtratos'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.github.wendykierp', name: 'JTransforms', version: '3.1'
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
