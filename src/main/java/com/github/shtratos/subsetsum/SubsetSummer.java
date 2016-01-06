@@ -2,7 +2,6 @@ package com.github.shtratos.subsetsum;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 
 import java.util.Set;
 
@@ -17,12 +16,12 @@ public interface SubsetSummer {
 
     default void validateInput(Set<Long> s, long u) {
         Preconditions.checkArgument(u > 0, "u must be natural, was: %s", u);
-        Preconditions.checkArgument(Iterables.all(s, e -> e > 0 && e < u),
-                "all elements in S must in range: [1..%s]", u-1);
+        Preconditions.checkArgument(s.stream().allMatch(e -> e > 0 && e < u),
+                "all elements in S must in range: [1..%s]", u - 1);
     }
 
     default void validateOutput(Set<Long> output, long u) {
-        Preconditions.checkState(Iterables.all(output, e -> e > 0 && e < u),
-                "all elements in output must in range: [1..%s", u-1);
+        Preconditions.checkState(output.stream().allMatch(e -> e > 0 && e < u),
+                "all elements in output must in range: [1..%s", u - 1);
     }
 }

@@ -58,7 +58,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
 
         final SubsetSums output = combine(A, u); // #12
         validateOutput(output.sums, u);
-        checkState(Range.closed(0l, u - 1).encloses(output.subsetSpan));
+        checkState(Range.closed(0L, u - 1).encloses(output.subsetSpan));
         checkState(output.subsetSize == n);
         return output.sums;
     }
