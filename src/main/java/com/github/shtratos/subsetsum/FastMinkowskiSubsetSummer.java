@@ -47,6 +47,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
         for (int i = 0; i <= k; i++) { // #7
             final ImmutableSortedSet<Long> subset = S.subSet(a.get(i), a.get(i + 1)); // #8
             final int t = subset.size();
+            if (t == 0) continue; // skip the interval if it's empty
             final List<SubsetSums> B = new ArrayList<>(t);
             for (Long s_j : subset) { // #9
                 checkState(s_j < u);

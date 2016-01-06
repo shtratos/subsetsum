@@ -22,6 +22,19 @@ import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 
 public class FastMinkowskiSubsetSummerTest {
+
+    @Test
+    public void subset_are_summed_correctly() throws Exception {
+        final SubsetSummer summer = new FastMinkowskiSubsetSummer();
+        final ImmutableSet<Long> S = ImmutableSet.of(1l, 2l, 3l, 4l, 5l);
+        final long u = 100l;
+
+        final ImmutableSet<Long> subsetSums = summer.subsetSums(S, u);
+        assertEquals(naiveSubsetSums(S, u).sums, subsetSums);
+    }
+
+/* ----------------------------------------------------------------------------------*/
+
     @Test
     public void can_combine_multiple_subset_sums() throws Exception {
         final ImmutableSet<Long> S = ImmutableSet.of(1l, 2l, 3l, 4l, 5l);
@@ -86,7 +99,7 @@ public class FastMinkowskiSubsetSummerTest {
                 .toSortedSet(Ordering.natural());
     }
 
-    /* ----------------------------------------------------------------------------------*/
+/* ----------------------------------------------------------------------------------*/
 
     @Test
     public void minkowski_sum() throws Exception {
@@ -134,7 +147,7 @@ public class FastMinkowskiSubsetSummerTest {
         return r.build();
     }
 
-    /* ----------------------------------------------------------------------------------*/
+/* ----------------------------------------------------------------------------------*/
 
     @Test
     public void perfect_h_is_injection() throws Exception {
@@ -169,7 +182,7 @@ public class FastMinkowskiSubsetSummerTest {
 
             final long d = baseOf(S);
             final long l = lengthOf(S);
-            checkState(d >= 2*l, "expected: %s >= 2 * %s", d, l);
+            checkState(d >= 2 * l, "expected: %s >= 2 * %s", d, l);
             final ImmutableSet<Long> hS = perfectH(S, d, l);
             final ImmutableSet<Long> inverse = inverseH(hS, d, l);
             assertEquals(S, inverse);
