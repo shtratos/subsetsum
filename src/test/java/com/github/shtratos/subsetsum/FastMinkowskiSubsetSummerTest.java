@@ -1,20 +1,67 @@
 package com.github.shtratos.subsetsum;
 
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.Random;
 
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.inverseH;
+import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.mergeSubsetSums;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.minkowskiSum;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.perfectH;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.concat;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 
 public class FastMinkowskiSubsetSummerTest {
+
+    @Test
+    public void can_merge_subset_sums_via_fast_algorithm() throws Exception {
+        final ImmutableSet<Long> A = ImmutableSet.of(51l, 52l, 53l);
+        final ImmutableSet<Long> B = ImmutableSet.of(50l, 54l, 55l);
+        final ImmutableSet<Long> AB = ImmutableSet.copyOf(concat(A, B));
+
+        final long u = 100l;
+        final SubsetSums ssA = naiveSubsetSums(A, u);
+        final SubsetSums ssB = naiveSubsetSums(B, u);
+
+        final SubsetSums subsetSums = mergeSubsetSums(ssA, ssB, u);
+        assertEquals(naiveSubsetSums(AB, u).sums, subsetSums.sums);
+    }
+
+    @Test
+    public void can_merge_subset_sums_via_standard_algorithm() {
+        final ImmutableSet<Long> A = ImmutableSet.of(5l, 6l, 7l);
+        final ImmutableSet<Long> B = ImmutableSet.of(8l, 9l, 10l);
+        final ImmutableSet<Long> AB = ImmutableSet.copyOf(concat(A, B));
+
+        final long u = 20l;
+        final SubsetSums ssA = naiveSubsetSums(A, u);
+        final SubsetSums ssB = naiveSubsetSums(B, u);
+
+        final SubsetSums subsetSums = mergeSubsetSums(ssA, ssB, u);
+        assertEquals(naiveSubsetSums(AB, u).sums, subsetSums.sums);
+    }
+
+    static SubsetSums naiveSubsetSums(ImmutableSet<Long> S, long u) {
+        return new SubsetSums(naiveSubsetSumsSet(S, u), Range.closed(baseOf(S), maxOf(S)), S.size());
+    }
+
+    static ImmutableSet<Long> naiveSubsetSumsSet(ImmutableSet<Long> S, long u) {
+        return FluentIterable.from(Sets.powerSet(S))
+                .filter(subset -> !subset.isEmpty())
+                .transform(subset -> subset.stream().reduce(0l, (x, y) -> x + y))
+                .filter(sum -> sum < u)
+                .toSortedSet(Ordering.natural());
+    }
+
+    /* ----------------------------------------------------------------------------------*/
 
     @Test
     public void minkowski_sum() throws Exception {

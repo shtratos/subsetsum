@@ -47,7 +47,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
             final List<SubsetSums> B = new ArrayList<>(t);
             for (Long s_j : subset) { // #9
                 assert s_j < u;
-                B.add(new SubsetSums(ImmutableSet.of(s_j), Range.closed(s_j, s_j), 1)); // #10
+                B.add(SubsetSums.ofSingleElement(s_j)); // #10
             }
             A.add(combine(B, u)); // #11
         }
@@ -73,9 +73,9 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
      * <p>
      * All elements of Si fit in the {@code span} range, which is a subset of {@code [0..u-1]}
      */
-    SubsetSums combine(final List<SubsetSums> sets, final long u) {
+    static SubsetSums combine(final List<SubsetSums> sets, final long u) {
         if (sets.size() == 1) {
-            return sets.iterator().next();
+            return sets.get(0);
         } else {
             final List<SubsetSums> combinedSets = new ArrayList<>(sets.size() / 2 + 1);
             for (List<SubsetSums> pairOfSets : Lists.partition(sets, 2)) {
@@ -103,7 +103,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
      * @param u   target bound
      * @return Σu(AB)
      */
-    SubsetSums mergeSubsetSums(SubsetSums ssA, SubsetSums ssB, final long u) {
+    static SubsetSums mergeSubsetSums(SubsetSums ssA, SubsetSums ssB, final long u) {
         // define the span a+[l−1] where all values of A and B fit
         final Range<Long> span = ssA.subsetSpan.span(ssB.subsetSpan);
         final long n = ssA.subsetSize + ssB.subsetSize;
@@ -111,18 +111,22 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
         final long l = span.upperEndpoint() + 1 - a;
         final long k = Math.min(n, LongMath.divide(u, a, RoundingMode.CEILING));
 
+        final ImmutableSet<Long> C;
         if (k * k * l >= u) {
             // apply standard algorithm
-            return new SubsetSums(minkowskiSum(ssA.sums, ssB.sums), span, n);
+            C = minkowskiSum(ssA.sums, ssB.sums);
         } else {
             // apply fast algorithm
             final long maxL = k * l;
             final ImmutableSet<Long> hA = perfectH(ssA.sums, a, maxL);
             final ImmutableSet<Long> hB = perfectH(ssB.sums, a, maxL);
             final ImmutableSet<Long> hAB = minkowskiSum(hA, hB);
-            ImmutableSet<Long> C = inverseH(hAB, a, maxL);
-            return new SubsetSums(ImmutableSet.copyOf(Iterables.concat(ssA.sums, ssB.sums, C)), span, n);
+            C = inverseH(hAB, a, maxL);
         }
+        final ImmutableSet<Long> sums = FluentIterable.from(Iterables.concat(ssA.sums, ssB.sums, C))
+                .filter(e -> e < u) // limit sums by target value
+                .toSet();
+        return new SubsetSums(sums, span, n);
     }
 
     /**
@@ -253,28 +257,4 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
     }
 
 
-    /**
-     * Subset sums for some set.
-     * Contains some metadata about the set.
-     */
-    static class SubsetSums {
-        /**
-         * A set of sums of all subsets of the current set.
-         */
-        final ImmutableSet<Long> sums;
-        /**
-         * Range of values in the current set.
-         */
-        final Range<Long> subsetSpan;
-        /**
-         * Size of the current set.
-         */
-        final long subsetSize;
-
-        SubsetSums(ImmutableSet<Long> sums, Range<Long> subsetSpan, long subsetSize) {
-            this.sums = sums;
-            this.subsetSpan = subsetSpan;
-            this.subsetSize = subsetSize;
-        }
-    }
 }
