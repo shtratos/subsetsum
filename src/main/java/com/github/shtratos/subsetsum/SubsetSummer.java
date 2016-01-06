@@ -6,12 +6,14 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 
 /**
- * Problem statement:
- * given an integer {@code u} and a set of {@code n} integers {@code S} in the range {@code 0..u-1},
- * calculate all subset sums up to {@code u}.
+ * Subset Sums problem statement.
  */
 public interface SubsetSummer {
 
+    /**
+     * Given a positive integer {@code u} and a set of {@code n} integers {@code S} in the range {@code [1..u-1]},
+     * calculate all subset sums less than {@code u}.
+     */
     ImmutableSet<Long> subsetSums(Set<Long> s, long u);
 
     default void validateInput(Set<Long> s, long u) {

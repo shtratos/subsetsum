@@ -19,7 +19,10 @@ import static com.github.shtratos.subsetsum.MinkowskiSumUtils.minkowskiSum;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Implementing algorithm described <a href="http://arxiv.org/pdf/1507.02318v1.pdf">here</a>.
+ * Subset Sums problem solution using algorithm described <a href="http://arxiv.org/pdf/1507.02318v1.pdf">here</a>.
+ * <p>
+ * Running time is expected to be {@code O(sqrt(n) * u * (log^C(sqrt(n) * u)))}.
+ * @see <a href="https://docs.google.com/spreadsheets/d/1lamswVUOoZZo4v-frodPNhA3Y5I8Ke5IyOy-EkytNLw/edit?usp=sharing">experiments</a>
  */
 public class FastMinkowskiSubsetSummer implements SubsetSummer {
 
