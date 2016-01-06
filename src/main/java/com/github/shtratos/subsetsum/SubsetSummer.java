@@ -22,7 +22,7 @@ public interface SubsetSummer {
     }
 
     default void validateOutput(Set<Long> output, long u) {
-        Preconditions.checkArgument(Iterables.all(output, e -> e > 0 && e < u),
+        Preconditions.checkState(Iterables.all(output, e -> e > 0 && e < u),
                 "all elements in output must in range: [1..%s", u-1);
     }
 }

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkState;
+
 /**
  * Implementing algorithm described <a href="http://arxiv.org/pdf/1507.02318v1.pdf">here</a>.
  */
@@ -47,7 +49,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
             final int t = subset.size();
             final List<SubsetSums> B = new ArrayList<>(t);
             for (Long s_j : subset) { // #9
-                assert s_j < u;
+                checkState(s_j < u);
                 B.add(SubsetSums.ofSingleElement(s_j)); // #10
             }
             A.add(combine(B, u)); // #11
@@ -55,8 +57,8 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
 
         final SubsetSums output = combine(A, u); // #12
         validateOutput(output.sums, u);
-        assert Range.closed(0l, u - 1).encloses(output.subsetSpan);
-        assert output.subsetSize == n;
+        checkState(Range.closed(0l, u - 1).encloses(output.subsetSpan));
+        checkState(output.subsetSize == n);
         return output.sums;
     }
 
