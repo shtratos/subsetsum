@@ -49,7 +49,7 @@ public class FastMinkowskiSubsetSummerTest {
 
     @Test
     @Ignore("this test is for running experiments only")
-    public void subset_sums_randomized() throws Exception {
+    public void subset_sums_experiments() throws Exception {
         final SubsetSummer summer = new FastMinkowskiSubsetSummer();
         for (int n = 1; n < 200; n++) {
             final long u = 300L;
