@@ -31,7 +31,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
 
         final long n = S.size(); // #1
 
-        final int k = log2(log2(n)); // #3
+        final int k = log2(Math.max(log2(n), 1)); // #3
         final List<Long> a = new ArrayList<>(k + 2);
         a.add(0L); // #2
 

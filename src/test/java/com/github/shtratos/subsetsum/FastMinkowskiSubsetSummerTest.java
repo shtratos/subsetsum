@@ -1,5 +1,6 @@
 package com.github.shtratos.subsetsum;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -9,6 +10,7 @@ import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.combine;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.inverseH;
@@ -33,7 +35,23 @@ public class FastMinkowskiSubsetSummerTest {
         assertEquals(naiveSubsetSums(S, u).sums, subsetSums);
     }
 
-/* ----------------------------------------------------------------------------------*/
+    @Test
+    public void subset_sums_randomized() throws Exception {
+        final SubsetSummer summer = new FastMinkowskiSubsetSummer();
+        final Random r = new Random();
+        for (int n = 1; n < 100; n++) {
+            final long u = 10000l ;
+            for (int i = 0; i < 1; i++) {
+                final ImmutableSet<Long> S = randomSetOfFixedSize(n * 100, n * 100);
+                final Stopwatch timer = Stopwatch.createStarted();
+                final ImmutableSet<Long> subsetSums = summer.subsetSums(S, u);
+//                System.out.printf("n = %d,\ttime,ms = %.5f%n", S.size(), timer.elapsed(TimeUnit.NANOSECONDS) / 1000000.0);
+                System.out.printf("%d\t%.5f%n", S.size(), timer.elapsed(TimeUnit.NANOSECONDS) / 1000000.0);
+//            assertEquals(naiveSubsetSums(S, u).sums, subsetSums);
+            }
+        }
+    }
+    /* ----------------------------------------------------------------------------------*/
 
     @Test
     public void can_combine_multiple_subset_sums() throws Exception {
@@ -138,6 +156,11 @@ public class FastMinkowskiSubsetSummerTest {
     private static ImmutableSet<Long> randomSet(int valueLimit, int sizeLimit) {
         final Random random = new Random();
         final int size = random.nextInt(sizeLimit) + 1;
+        return randomSetOfFixedSize(valueLimit, size);
+    }
+
+    private static ImmutableSet<Long> randomSetOfFixedSize(int valueLimit, int size) {
+        final Random random = new Random();
         ImmutableSet.Builder<Long> r = ImmutableSet.<Long>builder();
         for (int i = 0; i < size; i++) {
             final long v = random.nextInt(valueLimit - 1) + 1;
