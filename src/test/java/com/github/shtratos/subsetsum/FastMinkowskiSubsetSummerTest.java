@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Random;
@@ -15,8 +16,9 @@ import java.util.concurrent.TimeUnit;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.combine;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.inverseH;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.mergeSubsetSums;
-import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.minkowskiSum;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.perfectH;
+import static com.github.shtratos.subsetsum.TestUtils.randomSet;
+import static com.github.shtratos.subsetsum.TestUtils.randomSetOfFixedSize;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.concat;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -36,11 +38,11 @@ public class FastMinkowskiSubsetSummerTest {
     }
 
     @Test
+    @Ignore("this test is for running experiments only")
     public void subset_sums_randomized() throws Exception {
         final SubsetSummer summer = new FastMinkowskiSubsetSummer();
-        final Random r = new Random();
         for (int n = 1; n < 200; n++) {
-            final long u = 30000L;
+            final long u = 300L;
             for (int i = 0; i < 1; i++) {
                 final ImmutableSet<Long> S = randomSetOfFixedSize(n * 100, n * 100);
                 final Stopwatch timer = Stopwatch.createStarted();
@@ -113,59 +115,6 @@ public class FastMinkowskiSubsetSummerTest {
                 .transform(subset -> subset.stream().reduce(0L, (x, y) -> x + y))
                 .filter(sum -> sum < u)
                 .toSortedSet(Ordering.natural());
-    }
-
-/* ----------------------------------------------------------------------------------*/
-
-    @Test
-    public void minkowski_sum() throws Exception {
-        assertEquals(ImmutableSet.of(3L),
-                minkowskiSum(ImmutableSet.of(1L), ImmutableSet.of(2L)));
-        assertEquals(ImmutableSet.of(2L),
-                minkowskiSum(ImmutableSet.of(1L), ImmutableSet.of(1L, 1L)));
-        assertEquals(ImmutableSet.of(4L, 5L, 6L, 7L, 8L),
-                minkowskiSum(ImmutableSet.of(1L, 2L, 4L), ImmutableSet.of(3L, 4L)));
-
-        verifyMinkowskiSum(ImmutableSet.of(1L, 100L, 1000L, 10000L), ImmutableSet.of(1L, 10000L));
-    }
-
-    @Test
-    public void minkowski_sum_randomized_test() throws Exception {
-        for (int i = 0; i < 100; i++) {
-            verifyMinkowskiSum(randomSet(1000, 100), randomSet(10, 10));
-        }
-    }
-
-    private void verifyMinkowskiSum(ImmutableSet<Long> A, ImmutableSet<Long> B) {
-        assertEquals(naiveMinkowskiSum(A, B), minkowskiSum(A, B));
-    }
-
-    // TODO benchmark against FFT-based algorithm
-    private static ImmutableSet<Long> naiveMinkowskiSum(ImmutableSet<Long> A, ImmutableSet<Long> B) {
-        ImmutableSet.Builder<Long> c = ImmutableSet.<Long>builder();
-        for (Long a : A) {
-            for (Long b : B) {
-                c.add(a + b);
-            }
-        }
-        return c.build();
-    }
-
-    private static ImmutableSet<Long> randomSet(int valueLimit, int sizeLimit) {
-        final Random random = new Random();
-        final int size = random.nextInt(sizeLimit) + 1;
-        return randomSetOfFixedSize(valueLimit, size);
-    }
-
-    private static ImmutableSet<Long> randomSetOfFixedSize(int valueLimit, int size) {
-        final Random random = new Random();
-        ImmutableSet.Builder<Long> r = ImmutableSet.<Long>builder();
-        for (int i = 0; i < size; i++) {
-            final long v = random.nextInt(valueLimit - 1) + 1;
-            checkState(v > 0 && v < valueLimit, "bad value: %s", v);
-            r.add(v);
-        }
-        return r.build();
     }
 
 /* ----------------------------------------------------------------------------------*/
