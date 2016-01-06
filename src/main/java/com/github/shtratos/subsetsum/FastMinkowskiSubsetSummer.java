@@ -32,8 +32,9 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
         final ImmutableSortedSet<Long> S = ImmutableSortedSet.copyOf(inputS);
         if (inputS.isEmpty()) return ImmutableSet.of();
 
-        final long n = S.size(); // #1
+        final long n = S.size(); // #1, here and further #i denotes corresponding line in the algorithm pseudo-code in the paper
 
+        // split S in k + 2 intervals to get predictable running times
         final int k = log2(Math.max(log2(n), 1)); // #3
         final List<Long> a = new ArrayList<>(k + 2);
         a.add(0L); // #2
@@ -46,6 +47,8 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
         }
         a.add(u); // #6
 
+        // independently calculate subset sums on each interval of known size
+        // (I think this can be done in parallel)
         List<SubsetSums> A = new ArrayList<>(k + 2);
         for (int i = 0; i <= k; i++) { // #7
             final ImmutableSortedSet<Long> subset = S.subSet(a.get(i), a.get(i + 1)); // #8
@@ -59,7 +62,9 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
             A.add(combine(B, u)); // #11
         }
 
+        // merge results from all intervals
         final SubsetSums output = combine(A, u); // #12
+
         validateOutput(output.sums, u);
         checkState(Range.closed(0L, u - 1).encloses(output.subsetSpan));
         checkState(output.subsetSize == n);
@@ -125,6 +130,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
             C = minkowskiSum(ssA.sums, ssB.sums);
         } else {
             // apply fast algorithm
+            // it basically tries to shrink the range of values in order to speed up Minkowski sum calculation
             final long maxL = k * l;
             final ImmutableSet<Long> hA = perfectH(ssA.sums, a, maxL);
             final ImmutableSet<Long> hB = perfectH(ssB.sums, a, maxL);
