@@ -1,5 +1,6 @@
 package com.github.shtratos.subsetsum;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
@@ -74,7 +75,8 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
      * All elements of Si fit in the {@code span} range, which is a subset of {@code [0..u-1]}
      */
     static SubsetSums combine(final List<SubsetSums> sets, final long u) {
-        if (sets.size() == 1) {
+        if (sets.size() <= 1) {
+            Preconditions.checkArgument(!sets.isEmpty(), "sets must have at least one element!");
             return sets.get(0);
         } else {
             final List<SubsetSums> combinedSets = new ArrayList<>(sets.size() / 2 + 1);

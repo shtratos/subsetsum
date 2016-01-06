@@ -1,6 +1,7 @@
 package com.github.shtratos.subsetsum;
 
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
@@ -9,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.combine;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.inverseH;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.mergeSubsetSums;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.minkowskiSum;
@@ -20,6 +22,29 @@ import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 
 public class FastMinkowskiSubsetSummerTest {
+    @Test
+    public void can_combine_multiple_subset_sums() throws Exception {
+        final ImmutableSet<Long> S = ImmutableSet.of(1l, 2l, 3l, 4l, 5l);
+        final ImmutableList<SubsetSums> singleSums = FluentIterable.from(S)
+                .transform(x -> SubsetSums.ofSingleElement(x))
+                .toList();
+        final long u = 100l;
+
+        final SubsetSums subsetSums = combine(singleSums, u);
+        assertEquals(naiveSubsetSums(S, u).sums, subsetSums.sums);
+    }
+
+    @Test
+    public void can_combine_one_subset_sum() throws Exception {
+        final SubsetSums singleSum = combine(ImmutableList.of(SubsetSums.ofSingleElement(42l)), 100l);
+        assertEquals(ImmutableSet.of(42l), singleSum.sums);
+
+        final SubsetSums noSums = combine(ImmutableList.of(SubsetSums.ofSingleElement(42l)), 20l);
+        assertEquals(ImmutableSet.of(42l), noSums.sums);
+    }
+
+
+/* ----------------------------------------------------------------------------------*/
 
     @Test
     public void can_merge_subset_sums_via_fast_algorithm() throws Exception {
