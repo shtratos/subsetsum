@@ -1,4 +1,4 @@
-A Faster Pseudopolynomial Time Algorithm for Subset Sum
+### A Faster Pseudopolynomial Time Algorithm for Subset Sum
 
 Java implementation of SubsetSum algorithm described here: http://arxiv.org/pdf/1507.02318v1.pdf
 
