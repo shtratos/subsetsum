@@ -28,13 +28,23 @@ import static org.junit.Assert.assertEquals;
 public class FastMinkowskiSubsetSummerTest {
 
     @Test
-    public void subset_are_summed_correctly() throws Exception {
+    public void subsets_are_summed_correctly() throws Exception {
         final SubsetSummer summer = new FastMinkowskiSubsetSummer();
         final ImmutableSet<Long> S = ImmutableSet.of(1L, 2L, 3L, 4L, 5L);
         final long u = 100L;
 
         final ImmutableSet<Long> subsetSums = summer.subsetSums(S, u);
         assertEquals(naiveSubsetSums(S, u).sums, subsetSums);
+    }
+
+    @Test
+    public void trivial_cases() throws Exception {
+        final SubsetSummer summer = new FastMinkowskiSubsetSummer();
+
+        assertEquals(ImmutableSet.of(), summer.subsetSums(ImmutableSet.of(), 42L));
+        assertEquals(ImmutableSet.of(7L), summer.subsetSums(ImmutableSet.of(7L), 42L));
+        assertEquals(ImmutableSet.of(2L, 3L, 5L), summer.subsetSums(ImmutableSet.of(2L, 3L), 42L));
+        assertEquals(ImmutableSet.of(2L, 3L), summer.subsetSums(ImmutableSet.of(2L, 3L), 5L));
     }
 
     @Test
@@ -51,7 +61,8 @@ public class FastMinkowskiSubsetSummerTest {
             }
         }
     }
-    /* ----------------------------------------------------------------------------------*/
+
+/* ----------------------------------------------------------------------------------*/
 
     @Test
     public void can_combine_multiple_subset_sums() throws Exception {

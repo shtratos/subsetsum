@@ -27,6 +27,7 @@ public class FastMinkowskiSubsetSummer implements SubsetSummer {
     public ImmutableSet<Long> subsetSums(Set<Long> inputS, final long u) {
         validateInput(inputS, u);
         final ImmutableSortedSet<Long> S = ImmutableSortedSet.copyOf(inputS);
+        if (inputS.isEmpty()) return ImmutableSet.of();
 
         final long n = S.size(); // #1
 
