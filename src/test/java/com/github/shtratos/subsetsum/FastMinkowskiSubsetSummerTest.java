@@ -4,9 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -17,6 +14,10 @@ import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.combine;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.inverseH;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.mergeSubsetSums;
 import static com.github.shtratos.subsetsum.FastMinkowskiSubsetSummer.perfectH;
+import static com.github.shtratos.subsetsum.TestUtils.baseOf;
+import static com.github.shtratos.subsetsum.TestUtils.lengthOf;
+import static com.github.shtratos.subsetsum.TestUtils.maxOf;
+import static com.github.shtratos.subsetsum.TestUtils.naiveSubsetSums;
 import static com.github.shtratos.subsetsum.TestUtils.randomSet;
 import static com.github.shtratos.subsetsum.TestUtils.randomSetOfFixedSize;
 import static com.google.common.base.Preconditions.checkState;
@@ -116,19 +117,7 @@ public class FastMinkowskiSubsetSummerTest {
         assertEquals(naiveSubsetSums(AB, u).sums, subsetSums.sums);
     }
 
-    static SubsetSums naiveSubsetSums(ImmutableSet<Long> S, long u) {
-        return new SubsetSums(naiveSubsetSumsSet(S, u), Range.closed(baseOf(S), maxOf(S)), S.size());
-    }
-
-    static ImmutableSet<Long> naiveSubsetSumsSet(ImmutableSet<Long> S, long u) {
-        return FluentIterable.from(Sets.powerSet(S))
-                .filter(subset -> !subset.isEmpty())
-                .transform(subset -> subset.stream().reduce(0L, (x, y) -> x + y))
-                .filter(sum -> sum < u)
-                .toSortedSet(Ordering.natural());
-    }
-
-/* ----------------------------------------------------------------------------------*/
+    /* ----------------------------------------------------------------------------------*/
 
     @Test
     public void perfect_h_is_injection() throws Exception {
@@ -173,15 +162,4 @@ public class FastMinkowskiSubsetSummerTest {
         }
     }
 
-    private static Long baseOf(ImmutableSet<Long> s) {
-        return Ordering.natural().min(s);
-    }
-
-    private static Long lengthOf(ImmutableSet<Long> s) {
-        return maxOf(s) - baseOf(s) + 1;
-    }
-
-    private static Long maxOf(ImmutableSet<Long> s) {
-        return Ordering.natural().max(s);
-    }
 }
