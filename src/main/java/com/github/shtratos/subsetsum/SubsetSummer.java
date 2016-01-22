@@ -19,11 +19,11 @@ public interface SubsetSummer {
     default void validateInput(Set<Long> s, long u) {
         Preconditions.checkArgument(u > 0, "u must be natural, was: %s", u);
         Preconditions.checkArgument(s.stream().allMatch(e -> e > 0 && e < u),
-                "all elements in S must in range: [1..%s]", u - 1);
+                "all elements in S must be in range: [1..%s]", u - 1);
     }
 
     default void validateOutput(Set<Long> output, long u) {
         Preconditions.checkState(output.stream().allMatch(e -> e > 0 && e < u),
-                "all elements in output must in range: [1..%s", u - 1);
+                "all elements in output must be in range: [1..%s", u - 1);
     }
 }
