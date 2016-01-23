@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.github.shtratos.subsetsum.TestUtils.naiveSubsetSums;
 import static com.github.shtratos.subsetsum.TestUtils.randomSetOfFixedSize;
+import static com.google.common.base.Preconditions.checkState;
 import static org.junit.Assert.assertEquals;
 
 public class DynamicProgrammingSubsetSummerTest {
@@ -35,12 +36,11 @@ public class DynamicProgrammingSubsetSummerTest {
 
     @Test
     @Ignore("this test is for running experiments only")
-    public void subset_sums_experiments() throws Exception {
+    public void subset_sums_comparison_experiments() throws Exception {
         final SubsetSummer summer1 = new DynamicProgrammingSubsetSummer();
         final SubsetSummer summer2 = new FastMinkowskiSubsetSummer();
-        boolean result = false;
-        for (int n = 1; n < 200; n++) {
-            final long u = 30000L;
+        for (int n = 1000; n < 2000; n++) {
+            final long u = 110000L;
             for (int i = 0; i < 1; i++) {
                 final ImmutableSet<Long> S = randomSetOfFixedSize(n * 100, n * 100);
 
@@ -53,11 +53,26 @@ public class DynamicProgrammingSubsetSummerTest {
                 final double summer2Time = timer2.elapsed(TimeUnit.NANOSECONDS) / 1000000.0;
 
                 System.out.printf("%d\t%.5f\t%.5f%n", S.size(), summer1Time, summer2Time);
-                result = result || subsetSums2.equals(subsetSums1);
+                checkState(subsetSums1.equals(subsetSums2), "results must be equal: ", subsetSums1, subsetSums2);
             }
         }
-        if (result) {
-            System.out.println("use result somehow to avoid runtime optimization");
+    }
+
+    @Test
+    @Ignore("this test is for running experiments only")
+    public void subset_sums_experiments() throws Exception {
+        final SubsetSummer summer1 = new DynamicProgrammingSubsetSummer();
+        for (int n = 1000; n < 2000; n++) {
+            final long u = 110000L;
+            for (int i = 0; i < 1; i++) {
+                final ImmutableSet<Long> S = randomSetOfFixedSize(n * 100, n * 100);
+
+                final Stopwatch timer1 = Stopwatch.createStarted();
+                final ImmutableSet<Long> subsetSums1 = summer1.subsetSums(S, u);
+                final double summer1Time = timer1.elapsed(TimeUnit.NANOSECONDS) / 1_000_000.0;
+
+                System.out.printf("%d\t%.5f%n", S.size(), summer1Time);
+            }
         }
     }
 
